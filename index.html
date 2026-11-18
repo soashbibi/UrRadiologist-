@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UrRadiologist - منصة قراءة الأشعة الذكية</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Tajawal', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-sky-700 text-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3 space-x-reverse">
+                <div class="bg-white text-sky-700 p-2 rounded-xl font-black text-xl shadow">UR</div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight">UrRadiologist</h1>
+                    <p class="text-xs text-sky-200">منصة طب الأشعة الذكية والآمنة</p>
+                </div>
+            </div>
+            <div id="nav-status" class="text-sm font-medium bg-sky-800 px-3 py-1.5 rounded-lg"></div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-8">
+        
+        <!-- ================= 1. LANDING VIEW: ROLE SELECTION ================= -->
+        <div id="view-landing" class="max-w-2xl mx-auto bg-white rounded-2xl shadow-xl p-8 border border-slate-100 my-12">
+            <div class="text-center mb-8">
+                <span class="bg-sky-100 text-sky-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">بوابة النظام</span>
+                <h2 class="text-3xl font-black text-slate-900 mt-3">مرحباً بك في UrRadiologist</h2>
+                <p class="text-slate-500 mt-2 text-sm">اختر صففتك للبدء في استخدام النظام بأمان تام</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Radiologist Role Card -->
+                <button onclick="selectRole('radiologist')" class="group p-6 rounded-2xl border-2 border-sky-100 hover:border-sky-600 bg-sky-50/50 hover:bg-sky-50 transition-all text-right flex flex-col justify-between shadow-sm hover:shadow-md">
+                    <div>
+                        <div class="w-12 h-12 bg-sky-600 text-white rounded-xl flex items-center justify-center font-bold text-xl mb-4 group-hover:scale-110 transition-transform">
+                            👨‍⚕️
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900">طبيب أشعة</h3>
+                        <p class="text-sm text-slate-600 mt-2">إدارة الرموز، متابعة الأشعات المرسلة، كتابة التقارير الطبية وإرفاقها.</p>
+                    </div>
+                    <div class="mt-6 flex items-center text-sky-600 font-bold text-sm">
+                        <span>دخول الطبيب</span>
+                        <svg class="w-4 h-4 mr-2 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </div>
+                </button>
+
+                <!-- Sender Role Card -->
+                <button onclick="selectRole('sender')" class="group p-6 rounded-2xl border-2 border-emerald-100 hover:border-emerald-600 bg-emerald-50/50 hover:bg-emerald-50 transition-all text-right flex flex-col justify-between shadow-sm hover:shadow-md">
+                    <div>
+                        <div class="w-12 h-12 bg-emerald-600 text-white rounded-xl flex items-center justify-center font-bold text-xl mb-4 group-hover:scale-110 transition-transform">
+                            📤
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900">مُرسل البيانات</h3>
+                        <p class="text-sm text-slate-600 mt-2">إدخال رمز الدخول الثاني، رفع بيانات المرضى وملفات الأشعات، ومتابعة التقارير الجاهزة.</p>
+                    </div>
+                    <div class="mt-6 flex items-center text-emerald-600 font-bold text-sm">
+                        <span>دخول المُرسل</span>
+                        <svg class="w-4 h-4 mr-2 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </div>
+                </button>
+            </div>
+
+            <!-- Quick Testing Helper Box -->
+            <div class="mt-10 p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-600">
+                <div class="font-bold text-slate-700 mb-1 flex items-center">
+                    <span class="ml-1">💡</span> مساعدة للتجربة السريعة:
+                </div>
+                <p>الرمز الافتراضي لطبيب الأشعة هو: <code class="bg-white px-2 py-0.5 rounded font-bold text-sky-700 border">DOC-123</code> وللمرسل: <code class="bg-white px-2 py-0.5 rounded font-bold text-emerald-700 border">SND-456</code> (يمكنك توليد رموز جديدة من لوحة الطبيب).</p>
+            </div>
+        </div>
+
+        <!-- ================= 2. RADIOLOGIST LOGIN VIEW ================= -->
+        <div id="view-radiologist-login" class="hidden max-w-md mx-auto bg-white rounded-2xl shadow-xl p-8 border border-slate-100 my-16">
+            <button onclick="goHome()" class="text-slate-400 hover:text-slate-600 mb-6 flex items-center text-sm font-medium">
+                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                العودة للرئيسية
+            </button>
+            <div class="text-center mb-6">
+                <div class="w-14 h-14 bg-sky-100 text-sky-700 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-3">👨‍⚕️</div>
+                <h3 class="text-2xl font-black text-slate-900">تسجيل دخول طبيب الأشعة</h3>
+                <p class="text-slate-500 text-sm mt-1">أدخل رمز الدخول الأول الخاص بك</p>
+            </div>
+            
+            <form onsubmit="handleRadiologistLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-2">رمز الدخول الأول</label>
+                    <input type="text" id="doc-code-input" required placeholder="مثال: DOC-123" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none text-center font-mono text-lg tracking-wider">
+                </div>
+                <button type="submit" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-sky-600/30 transition-all">
+                    دخول اللوحة
+                </button>
+            </form>
+        </div>
+
+        <!-- ================= 3. SENDER LOGIN VIEW ================= -->
+        <div id="view-sender-login" class="hidden max-w-md mx-auto bg-white rounded-2xl shadow-xl p-8 border border-slate-100 my-16">
+            <button onclick="goHome()" class="text-slate-400 hover:text-slate-600 mb-6 flex items-center text-sm font-medium">
+                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                العودة للرئيسية
+            </button>
+            <div class="text-center mb-6">
+                <div class="w-14 h-14 bg-emerald-100 text-emerald-700 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-3">📤</div>
+                <h3 class="text-2xl font-black text-slate-900">تسجيل دخول المُرسل</h3>
+                <p class="text-slate-500 text-sm mt-1">أدخل رمز الدخول الثاني المُستلم من الطبيب</p>
+            </div>
+            
+            <form onsubmit="handleSenderLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-2">رمز الدخول الثاني</label>
+                    <input type="text" id="sender-code-input" required placeholder="مثال: SND-456" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none text-center font-mono text-lg tracking-wider">
+                </div>
+                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-emerald-600/30 transition-all">
+                    دخول لوحة المُرسل
+                </button>
+            </form>
+        </div>
+
+        <!-- ================= 4. RADIOLOGIST DASHBOARD ================= -->
+        <div id="view-radiologist-dashboard" class="hidden space-y-6">
+            <!-- Top Bar / Actions -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4">
+                <div>
+                    <h3 class="text-xl font-bold text-slate-900">لوحة تحكم طبيب الأشعة</h3>
+                    <p class="text-sm text-slate-500">إدارة الرموز الثانية ومتابعة التقارير الواردة من المُرسلين</p>
+                </div>
+                <div class="flex items-center gap-3 w-full md:w-auto">
+                    <button onclick="openCodeManager()" class="flex-1 md:flex-none bg-sky-100 hover:bg-sky-200 text-sky-800 font-bold px-4 py-2.5 rounded-xl text-sm transition-all flex items-center justify-center gap-2">
+                        <span>🔑</span> إدارة الرموز الثانية (المُرسلين)
+                    </button>
+                    <button onclick="logout()" class="bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold px-4 py-2.5 rounded-xl text-sm transition-all">
+                        تسجيل خروج
+                    </button>
+                </div>
+            </div>
+
+            <!-- Radiologist Stats & Senders Summary -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                    <p class="text-sm text-slate-500 font-medium">إجمالي الحالات الواردة</p>
+                    <h4 id="stat-total-cases" class="text-3xl font-black text-slate-900 mt-2">0</h4>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                    <p class="text-sm text-slate-500 font-medium">الحالات بانتظار التقرير</p>
+                    <h4 id="stat-pending-cases" class="text-3xl font-black text-amber-600 mt-2">0</h4>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                    <p class="text-sm text-slate-500 font-medium">التقارير الجاهزة</p>
+                    <h4 id="stat-ready-cases" class="text-3xl font-black text-emerald-600 mt-2">0</h4>
+                </div>
+            </div>
+
+            <!-- Cases Table for Radiologist -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                <div class="p-6 border-b border-slate-100 flex justify-between items-center">
+                    <h4 class="font-bold text-slate-900 text-lg">سجل الأشاعات الواردة والتقارير</h4>
+                    <div class="flex gap-2">
+                        <select id="doc-filter-sender" onchange="renderRadiologistCases()" class="text-sm border border-slate-200 rounded-xl px-3 py-1.5 outline-none bg-slate-50">
+                            <option value="">جميع المُرسلين</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-right border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-600 text-xs font-bold uppercase tracking-wider border-b border-slate-100">
+                                <th class="p-4">المُرسل (الرمز الثاني)</th>
+                                <th class="p-4">اسم المريض</th>
+                                <th class="p-4">العمر / الجنس</th>
+                                <th class="p-4">ملف الأشعة</th>
+                                <th class="p-4">الحالة</th>
+                                <th class="p-4">التقرير الطبي</th>
+                                <th class="p-4 text-center">الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="radiologist-cases-tbody" class="divide-y divide-slate-100 text-sm">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= 5. SENDER DASHBOARD ================= -->
+        <div id="view-sender-dashboard" class="hidden space-y-6">
+            <!-- Top Bar -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center">
+                <div>
+                    <h3 class="text-xl font-bold text-slate-900" id="sender-welcome-title">لوحة المُرسل</h3>
+                    <p class="text-sm text-slate-500" id="sender-welcome-subtitle">إضافة أشعات جديدة ومتابعة التقارير الجاهزة</p>
+                </div>
+                <button onclick="logout()" class="bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold px-4 py-2.5 rounded-xl text-sm transition-all">
+                    تسجيل خروج
+                </button>
+            </div>
+
+            <!-- Sender Navigation Tabs (The 3 required tabs) -->
+            <div class="flex border-b border-slate-200 gap-2">
+                <button onclick="switchSenderTab('add')" id="tab-btn-add" class="flex-1 py-3 px-4 font-bold text-sm text-center border-b-2 border-emerald-600 text-emerald-600 bg-white rounded-t-xl transition-all">
+                    1- إضافة أشعة
+                </button>
+                <button onclick="switchSenderTab('list')" id="tab-btn-list" class="flex-1 py-3 px-4 font-bold text-sm text-center border-b-2 border-transparent text-slate-500 hover:text-slate-800 bg-white/50 rounded-t-xl transition-all">
+                    2- الأشعات (قيد الانتظار)
+                </button>
+                <button onclick="switchSenderTab('ready')" id="tab-btn-ready" class="flex-1 py-3 px-4 font-bold text-sm text-center border-b-2 border-transparent text-slate-500 hover:text-slate-800 bg-white/50 rounded-t-xl transition-all">
+                    3- جاهزة (التقارير المكتملة)
+                </button>
+            </div>
+
+            <!-- Tab 1: Add X-Ray Form -->
+            <div id="sender-tab-add" class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 max-w-2xl mx-auto">
+                <h4 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
+                    <span>➕</span> إضافة حالة أشعة جديدة
+                </h4>
+                <form onsubmit="handleAddNewXray(event)" class="space-y-5">
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">1- اسم المريض ثلاثي</label>
+                        <input type="text" id="pat-name" required placeholder="مثال: محمد علي باحاج" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none">
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2">2- العمر</label>
+                            <input type="number" id="pat-age" required min="0" max="120" placeholder="مثال: 35" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2">3- الجنس</label>
+                            <select id="pat-gender" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none bg-white">
+                                <option value="">اختر الجنس</option>
+                                <option value="ذكر">ذكر</option>
+                                <option value="أنثى">أنثى</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">4- ادراج ملف الأشعة</label>
+                        <div class="border-2 border-dashed border-slate-200 rounded-xl p-6 text-center hover:border-emerald-500 transition-colors bg-slate-50">
+                            <input type="file" id="pat-file" required accept="image/*,.pdf,.dcm" onchange="previewFileName(this)" class="hidden">
+                            <label for="pat-file" class="cursor-pointer flex flex-col items-center justify-center">
+                                <span class="text-3xl mb-2">📁</span>
+                                <span id="file-label-text" class="text-sm font-bold text-slate-700">انقر لاختيار ملف الأشعة (صورة، PDF، DICOM)</span>
+                                <span class="text-xs text-slate-400 mt-1">PNG, JPG, PDF بحد أقصى 20 ميجابايت</span>
+                            </label>
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-emerald-600/30 transition-all">
+                        إضافة البيانات إلى الأشعات
+                    </button>
+                </form>
+            </div>
+
+            <!-- Tab 2: X-Rays List (Pending) -->
+            <div id="sender-tab-list" class="hidden bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+                <h4 class="text-lg font-bold text-slate-900 mb-4">الأشعات المرسلة (قيد قراءة الطبيب)</h4>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-right border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-600 text-xs font-bold uppercase tracking-wider border-b border-slate-100">
+                                <th class="p-4">اسم المريض</th>
+                                <th class="p-4">العمر / الجنس</th>
+                                <th class="p-4">تاريخ الإرسال</th>
+                                <th class="p-4">ملف الأشعة</th>
+                                <th class="p-4">الحالة</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sender-pending-tbody" class="divide-y divide-slate-100 text-sm">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Tab 3: Ready Reports List -->
+            <div id="sender-tab-ready" class="hidden bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+                <h4 class="text-lg font-bold text-slate-900 mb-4">الحالات الجاهزة (تم إرفاق التقرير الطبي)</h4>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-right border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-600 text-xs font-bold uppercase tracking-wider border-b border-slate-100">
+                                <th class="p-4">اسم المريض</th>
+                                <th class="p-4">العمر / الجنس</th>
+                                <th class="p-4">ملف الأشعة</th>
+                                <th class="p-4">التقرير الطبي (رقم 5)</th>
+                                <th class="p-4 text-center">تنزيل الملفات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sender-ready-tbody" class="divide-y divide-slate-100 text-sm">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- ================= MODAL: CODE MANAGER (Multiple Second Codes) ================= -->
+    <div id="modal-code-manager" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-xl w-full p-6 space-y-6">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-4">
+                <h3 class="text-xl font-bold text-slate-900">إدارة الرموز الثانية (المُرسلين)</h3>
+                <button onclick="closeCodeManager()" class="text-slate-400 hover:text-slate-600 font-bold text-xl">&times;</button>
+            </div>
+            
+            <div class="space-y-4">
+                <form onsubmit="handleCreateSenderCode(event)" class="bg-slate-50 p-4 rounded-xl border border-slate-200 flex gap-3 items-end">
+                    <div class="flex-grow">
+                        <label class="block text-xs font-bold text-slate-700 mb-1">اسم/وصف المُرسل (مثال: عيادة الأمل، د. خالد)</label>
+                        <input type="text" id="new-sender-name" required placeholder="اسم الجهة أو المُرسل" class="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm outline-none bg-white">
+                    </div>
+                    <button type="submit" class="bg-sky-600 hover:bg-sky-700 text-white text-sm font-bold px-4 py-2 rounded-lg shadow transition-all whitespace-nowrap">
+                        توليد رمز جديد
+                    </button>
+                </form>
+
+                <div>
+                    <h4 class="text-sm font-bold text-slate-700 mb-3">الرموز الفعالة والمُرسلين التابعين لها:</h4>
+                    <div class="max-h-60 overflow-y-auto space-y-2" id="codes-list-container">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end pt-4 border-t border-slate-100">
+                <button onclick="closeCodeManager()" class="bg-slate-200 hover:bg-slate-300 text-slate-800 text-sm font-bold px-5 py-2.5 rounded-xl transition-all">
+                    إغلاق
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= MODAL: UPLOAD REPORT (For Radiologist) ================= -->
+    <div id="modal-upload-report" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-6 space-y-6">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-4">
+                <h3 class="text-xl font-bold text-slate-900">إرفاق التقرير الطبي (البيانات رقم 5)</h3>
+                <button onclick="closeReportModal()" class="text-slate-400 hover:text-slate-600 font-bold text-xl">&times;</button>
+            </div>
+
+            <form onsubmit="handleSubmitReport(event)" class="space-y-4">
+                <input type="hidden" id="report-case-id">
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-1">المريض:</label>
+                    <p id="report-modal-patient-info" class="text-sm text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200"></p>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-2">كتابة التقرير الطبي / ملاحظات القراءة</label>
+                    <textarea id="report-text" rows="4" required placeholder="اكتب التقرير الطبي المفصل هنا..." class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm outline-none focus:ring-2 focus:ring-sky-500"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-2">أو إرفاق ملف التقرير (PDF / مستند)</label>
+                    <input type="file" id="report-file" accept="image/*,.pdf,.doc,.docx" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-sky-50 file:text-sky-700 hover:file:bg-sky-100">
+                </div>
+                <div class="flex justify-end gap-3 pt-4 border-t border-slate-100">
+                    <button type="button" onclick="closeReportModal()" class="bg-slate-200 hover:bg-slate-300 text-slate-800 text-sm font-bold px-5 py-2.5 rounded-xl transition-all">إلغاء</button>
+                    <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold px-5 py-2.5 rounded-xl shadow transition-all">حفظ وإرسال التقرير للمريض</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500">
+        جميع الحقوق محفوظة &copy; 2026 UrRadiologist - منصة قراءة الأشعة الذكية
+    </footer>
+
+    <!-- ================= JAVASCRIPT LOGIC ================= -->
+    <script>
+        // Initial Mock Database Setup in LocalStorage
+        function initStorage() {
+            if (!localStorage.getItem('ur_codes')) {
+                // Default codes: First code "DOC-123", Second codes array with sender name
+                localStorage.setItem('ur_codes', JSON.stringify([
+                    { code: 'SND-456', senderName: 'عيادة النور المركزية', docCode: 'DOC-123' },
+                    { code: 'SND-789', senderName: 'مستشفى الشفاء التخصصي', docCode: 'DOC-123' }
+                ]));
+            }
+            if (!localStorage.getItem('ur_cases')) {
+                localStorage.setItem('ur_cases', JSON.stringify([
+                    {
+                        id: 'CASE-001',
+                        senderCode: 'SND-456',
+                        senderName: 'عيادة النور المركزية',
+                        patientName: 'أحمد صالح النهدي',
+                        age: 28,
+                        gender: 'ذكر',
+                        fileName: 'xray_chest_01.jpg',
+                        fileData: 'https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=600&q=80',
+                        date: '2026-11-18 10:30',
+                        status: 'pending', // pending or ready
+                        reportText: '',
+                        reportFileName: '',
+                        reportFileData: ''
+                    }
+                ]));
+            }
+        }
+        initStorage();
+
+        // State Management
+        let currentUser = null; // { role: 'radiologist'|'sender', code: '...', senderName: '...' }
+
+        function getCodes() { return JSON.parse(localStorage.getItem('ur_codes')) || []; }
+        function setCodes(codes) { localStorage.setItem('ur_codes', JSON.stringify(codes)); }
+        function getCases() { return JSON.parse(localStorage.getItem('ur_cases')) || []; }
+        function setCases(cases) { localStorage.setItem('ur_cases', JSON.stringify(cases)); }
+
+        // Navigation / View Switching
+        function selectRole(role) {
+            document.getElementById('view-landing').classList.add('hidden');
+            if (role === 'radiologist') {
+                document.getElementById('view-radiologist-login').classList.remove('hidden');
+            } else {
+                document.getElementById('view-sender-login').classList.remove('hidden');
+            }
+        }
+
+        function goHome() {
+            document.getElementById('view-landing').classList.remove('hidden');
+            document.getElementById('view-radiologist-login').classList.add('hidden');
+            document.getElementById('view-sender-login').classList.add('hidden');
+            document.getElementById('view-radiologist-dashboard').classList.add('hidden');
+            document.getElementById('view-sender-dashboard').classList.add('hidden');
+            currentUser = null;
+            updateNavStatus();
+        }
+
+        function updateNavStatus() {
+            const statusEl = document.getElementById('nav-status');
+            if (!currentUser) {
+                statusEl.textContent = 'غير مسجل الدخول';
+            } else if (currentUser.role === 'radiologist') {
+                statusEl.textContent = 'طبيب أشعة (' + currentUser.code + ')';
+            } else {
+                statusEl.textContent = 'مُرسل: ' + currentUser.senderName + ' (' + currentUser.code + ')';
+            }
+        }
+
+        // Login Handlers
+        function handleRadiologistLogin(e) {
+            e.preventDefault();
+            const code = document.getElementById('doc-code-input').value.trim();
+            // Accept any code or default DOC-123
+            if (!code) return alert('الرجاء إدخال رمز الدخول');
+            
+            currentUser = { role: 'radiologist', code: code };
+            updateNavStatus();
+
+            document.getElementById('view-radiologist-login').classList.add('hidden');
+            document.getElementById('view-radiologist-dashboard').classList.remove('hidden');
+            loadRadiologistDashboard();
+        }
+
+        function handleSenderLogin(e) {
+            e.preventDefault();
+            const code = document.getElementById('sender-code-input').value.trim();
+            const codes = getCodes();
+            const found = codes.find(c => c.code === code);
+
+            if (!found) {
+                alert('رمز الدخول الثاني غير صحيح! تأكد من الرمز المُعطى لك من طبيب الأشعة.');
+                return;
+            }
+
+            currentUser = { role: 'sender', code: found.code, senderName: found.senderName, docCode: found.docCode };
+            updateNavStatus();
+
+            document.getElementById('view-sender-login').classList.add('hidden');
+            document.getElementById('view-sender-dashboard').classList.remove('hidden');
+            
+            document.getElementById('sender-welcome-title').textContent = 'لوحة المُرسل: ' + found.senderName;
+            document.getElementById('sender-welcome-subtitle').textContent = 'رمز الدخول الثاني: ' + found.code;
+
+            switchSenderTab('add');
+        }
+
+        function logout() {
+            goHome();
+        }
+
+        // ================= RADIOLOGIST DASHBOARD LOGIC =================
+        function loadRadiologistDashboard() {
+            const cases = getCases();
+            const codes = getCodes();
+
+            // Populate sender filter dropdown
+            const filterSelect = document.getElementById('doc-filter-sender');
+            filterSelect.innerHTML = '<option value="">جميع المُرسلين</option>';
+            codes.forEach(c => {
+                filterSelect.innerHTML += `<option value="${c.code}">${c.senderName} (${c.code})</option>`;
+            });
+
+            renderRadiologistCases();
+        }
+
+        function renderRadiologistCases() {
+            const cases = getCases();
+            const filterSender = document.getElementById('doc-filter-sender').value;
+            const tbody = document.getElementById('radiologist-cases-tbody');
+            tbody.innerHTML = '';
+
+            const filtered = filterSender ? cases.filter(c => c.senderCode === filterSender) : cases;
+
+            // Stats
+            document.getElementById('stat-total-cases').textContent = cases.length;
+            document.getElementById('stat-pending-cases').textContent = cases.filter(c => c.status === 'pending').length;
+            document.getElementById('stat-ready-cases').textContent = cases.filter(c => c.status === 'ready').length;
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-400">لا توجد حالات مسجلة حالياً.</td></tr>`;
+                return;
+            }
+
+            filtered.forEach(c => {
+                const isReady = c.status === 'ready';
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50/80 transition-colors">
+                        <td class="p-4 font-bold text-sky-700">
+                            <div>${c.senderName || 'غير معروف'}</div>
+                            <div class="text-xs font-mono text-slate-400">${c.senderCode}</div>
+                        </td>
+                        <td class="p-4 font-bold text-slate-800">${c.patientName}</td>
+                        <td class="p-4 text-slate-600">${c.age} سنة / ${c.gender}</td>
+                        <td class="p-4">
+                            <a href="${c.fileData}" download="${c.fileName}" target="_blank" class="inline-flex items-center gap-1.5 text-xs bg-sky-50 text-sky-700 font-bold px-3 py-1.5 rounded-lg hover:bg-sky-100 transition-all">
+                                <span>📥</span> تنزيل الأشعة (${c.fileName})
+                            </a>
+                        </td>
+                        <td class="p-4">
+                            <span class="inline-block px-2.5 py-1 text-xs font-bold rounded-full ${isReady ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">
+                                ${isReady ? 'جاهزة ✅' : 'قيد الانتظار ⏳'}
+                            </span>
+                        </td>
+                        <td class="p-4 text-xs text-slate-600 max-w-xs truncate">
+                            ${isReady ? (c.reportText || 'تم إرفاق ملف التقرير') : '<span class="text-slate-400">لم يُكتب بعد</span>'}
+                        </td>
+                        <td class="p-4 text-center">
+                            <button onclick="openReportModal('${c.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow transition-all">
+                                ${isReady ? 'تعديل التقرير' : 'إضافة التقرير (5)'}
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        // Code Manager (Multiple Second Codes)
+        function openCodeManager() {
+            document.getElementById('modal-code-manager').classList.remove('hidden');
+            document.getElementById('modal-code-manager').classList.add('flex');
+            renderCodesList();
+        }
+
+        function closeCodeManager() {
+            document.getElementById('modal-code-manager').classList.add('hidden');
+            document.getElementById('modal-code-manager').classList.remove('flex');
+            loadRadiologistDashboard();
+        }
+
+        function renderCodesList() {
+            const codes = getCodes();
+            const container = document.getElementById('codes-list-container');
+            container.innerHTML = '';
+
+            if (codes.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-400 text-center py-4">لا توجد رموز ثانية مسجلة.</p>`;
+                return;
+            }
+
+            codes.forEach((c, idx) => {
+                container.innerHTML += `
+                    <div class="flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-slate-200 text-sm">
+                        <div>
+                            <div class="font-bold text-slate-800">${c.senderName}</div>
+                            <div class="text-xs font-mono text-sky-600 font-bold mt-0.5">الرمز الثاني: ${c.code}</div>
+                        </div>
+                        <button onclick="deleteSenderCode('${c.code}')" class="text-rose-500 hover:text-rose-700 text-xs font-bold px-2.5 py-1 bg-rose-50 rounded-lg">حذف</button>
+                    </div>
+                `;
+            });
+        }
+
+        function handleCreateSenderCode(e) {
+            e.preventDefault();
+            const nameInput = document.getElementById('new-sender-name');
+            const senderName = nameInput.value.trim();
+            if (!senderName) return;
+
+            // Generate unique second code
+            const randomCode = 'SND-' + Math.floor(100 + Math.random() * 900);
+            const codes = getCodes();
+            codes.push({
+                code: randomCode,
+                senderName: senderName,
+                docCode: currentUser.code
+            });
+            setCodes(codes);
+            nameInput.value = '';
+            renderCodesList();
+        }
+
+        function deleteSenderCode(code) {
+            if (!confirm('هل أنت متأكد من حذف هذا الرمز؟')) return;
+            let codes = getCodes();
+            codes = codes.filter(c => c.code !== code);
+            setCodes(codes);
+            renderCodesList();
+        }
+
+        // Report Modal Logic
+        function openReportModal(caseId) {
+            const cases = getCases();
+            const c = cases.find(item => item.id === caseId);
+            if (!c) return;
+
+            document.getElementById('report-case-id').value = c.id;
+            document.getElementById('report-modal-patient-info').textContent = `المريض: ${c.patientName} (${c.age} سنة، ${c.gender}) - المُرسل: ${c.senderName}`;
+            document.getElementById('report-text').value = c.reportText || '';
+            document.getElementById('report-file').value = '';
+
+            document.getElementById('modal-upload-report').classList.remove('hidden');
+            document.getElementById('modal-upload-report').classList.add('flex');
+        }
+
+        function closeReportModal() {
+            document.getElementById('modal-upload-report').classList.add('hidden');
+            document.getElementById('modal-upload-report').classList.remove('flex');
+        }
+
+        function handleSubmitReport(e) {
+            e.preventDefault();
+            const caseId = document.getElementById('report-case-id').value;
+            const reportText = document.getElementById('report-text').value;
+            const fileInput = document.getElementById('report-file');
+
+            let cases = getCases();
+            const idx = cases.findIndex(item => item.id === caseId);
+            if (idx === -1) return;
+
+            let reportFileName = cases[idx].reportFileName || 'تقرير_طبي.pdf';
+            let reportFileData = cases[idx].reportFileData || 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
+
+            if (fileInput.files && fileInput.files[0]) {
+                const file = fileInput.files[0];
+                reportFileName = file.name;
+                reportFileData = URL.createObjectURL(file);
+            }
+
+            cases[idx].status = 'ready';
+            cases[idx].reportText = reportText;
+            cases[idx].reportFileName = reportFileName;
+            cases[idx].reportFileData = reportFileData;
+
+            setCases(cases);
+            closeReportModal();
+            renderRadiologistCases();
+            alert('تم حفظ وإرسال التقرير الطبي بنجاح!');
+        }
+
+        // ================= SENDER DASHBOARD LOGIC =================
+        function switchSenderTab(tab) {
+            document.getElementById('sender-tab-add').classList.add('hidden');
+            document.getElementById('sender-tab-list').classList.add('hidden');
+            document.getElementById('sender-tab-ready').classList.add('hidden');
+
+            document.getElementById('tab-btn-add').className = 'flex-1 py-3 px-4 font-bold text-sm text-center border-b-2 border-transparent text-slate-500 hover:text-slate-800 bg-white/50 rounded-t-xl transition-all';
+            document.getElementById('tab-btn-list').className = 'flex-1 py-3 px-4 font-bold text-sm text-center border-b-2 border-transparent text-slate-500 hover:text-slate-800 bg-white/50 rounded-t-xl transition-all';
+            document.getElementById('tab-btn-ready').className = 'flex-1 py-3 px-4 font-bold text-sm text-center border-b-2 border-transparent text-slate-500 hover:text-slate-800 bg-white/50 rounded-t-xl transition-all';
+
+            if (tab === 'add') {
+                document.getElementById('sender-tab-add').classList.remove('hidden');
+                document.getElementById('tab-btn-add').className = 'flex-1 py-3 px-4 font-bold text-sm text-center border-b-2 border-emerald-600 text-emerald-600 bg-white rounded-t-xl transition-all';
+            } else if (tab === 'list') {
+                document.getElementById('sender-tab-list').classList.remove('hidden');
+                document.getElementById('tab-btn-list').className = 'flex-1 py-3 px-4 font-bold text-sm text-center border-b-2 border-emerald-600 text-emerald-600 bg-white rounded-t-xl transition-all';
+                renderSenderPendingCases();
+            } else if (tab === 'ready') {
+                document.getElementById('sender-tab-ready').classList.remove('hidden');
+                document.getElementById('tab-btn-ready').className = 'flex-1 py-3 px-4 font-bold text-sm text-center border-b-2 border-emerald-600 text-emerald-600 bg-white rounded-t-xl transition-all';
+                renderSenderReadyCases();
+            }
+        }
+
+        function previewFileName(input) {
+            const label = document.getElementById('file-label-text');
+            if (input.files && input.files[0]) {
+                label.textContent = 'تم اختيار الملف: ' + input.files[0].name;
+            }
+        }
+
+        function handleAddNewXray(e) {
+            e.preventDefault();
+            const patientName = document.getElementById('pat-name').value.trim();
+            const age = document.getElementById('pat-age').value.trim();
+            const gender = document.getElementById('pat-gender').value;
+            const fileInput = document.getElementById('pat-file');
+
+            if (!fileInput.files || !fileInput.files[0]) {
+                alert('الرجاء إرفاق ملف الأشعة');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const fileDataUrl = URL.createObjectURL(file);
+
+            const cases = getCases();
+            const now = new Date();
+            const dateStr = now.toISOString().slice(0, 10) + ' ' + now.toTimeString().slice(0, 5);
+
+            cases.push({
+                id: 'CASE-' + Date.now(),
+                senderCode: currentUser.code,
+                senderName: currentUser.senderName,
+                patientName: patientName,
+                age: age,
+                gender: gender,
+                fileName: file.name,
+                fileData: fileDataUrl,
+                date: dateStr,
+                status: 'pending',
+                reportText: '',
+                reportFileName: '',
+                reportFileData: ''
+            });
+
+            setCases(cases);
+            alert('تم إضافة بيانات المريض والأشعة بنجاح وإرسالها لطبيب الأشعة!');
+            e.target.reset();
+            document.getElementById('file-label-text').textContent = 'انقر لاختيار ملف الأشعة (صورة، PDF، DICOM)';
+            switchSenderTab('list');
+        }
+
+        function renderSenderPendingCases() {
+            const cases = getCases().filter(c => c.senderCode === currentUser.code && c.status === 'pending');
+            const tbody = document.getElementById('sender-pending-tbody');
+            tbody.innerHTML = '';
+
+            if (cases.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400">لا توجد أشعات قيد الانتظار حالياً.</td></tr>`;
+                return;
+            }
+
+            cases.forEach(c => {
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50 transition-colors">
+                        <td class="p-4 font-bold text-slate-800">${c.patientName}</td>
+                        <td class="p-4 text-slate-600">${c.age} سنة / ${c.gender}</td>
+                        <td class="p-4 text-xs text-slate-500">${c.date}</td>
+                        <td class="p-4">
+                            <a href="${c.fileData}" download="${c.fileName}" target="_blank" class="inline-flex items-center gap-1.5 text-xs bg-sky-50 text-sky-700 font-bold px-3 py-1.5 rounded-lg hover:bg-sky-100 transition-all">
+                                <span>📥</span> تنزيل الأشعة (${c.fileName})
+                            </a>
+                        </td>
+                        <td class="p-4">
+                            <span class="inline-block px-2.5 py-1 text-xs font-bold rounded-full bg-amber-100 text-amber-700">قيد الانتظار ⏳</span>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function renderSenderReadyCases() {
+            const cases = getCases().filter(c => c.senderCode === currentUser.code && c.status === 'ready');
+            const tbody = document.getElementById('sender-ready-tbody');
+            tbody.innerHTML = '';
+
+            if (cases.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400">لا توجد حالات جاهزة حالياً.</td></tr>`;
+                return;
+            }
+
+            cases.forEach(c => {
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50 transition-colors">
+                        <td class="p-4 font-bold text-slate-800">${c.patientName}</td>
+                        <td class="p-4 text-slate-600">${c.age} سنة / ${c.gender}</td>
+                        <td class="p-4">
+                            <a href="${c.fileData}" download="${c.fileName}" target="_blank" class="inline-flex items-center gap-1.5 text-xs bg-sky-50 text-sky-700 font-bold px-3 py-1.5 rounded-lg hover:bg-sky-100 transition-all">
+                                <span>📥</span> تنزيل الأشعة
+                            </a>
+                        </td>
+                        <td class="p-4 text-xs text-slate-700 max-w-xs">
+                            <p class="font-bold text-slate-900 mb-1">${c.reportText}</p>
+                        </td>
+                        <td class="p-4 text-center">
+                            <a href="${c.reportFileData}" download="${c.reportFileName || 'التقرير_الطبي.pdf'}" target="_blank" class="inline-flex items-center gap-1.5 text-xs bg-emerald-600 text-white font-bold px-3.5 py-2 rounded-xl hover:bg-emerald-700 transition-all shadow">
+                                <span>📥</span> تنزيل التقرير (5)
+                            </a>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+    </script>
+</body>
+</html>
